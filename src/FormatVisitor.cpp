@@ -712,10 +712,8 @@ antlrcpp::Any FormatVisitor::visitExplist(LuaParser::ExplistContext* ctx) {
         hasIncIndent = true;
         visitExp(ctx->exp().front());
     } else {
-        firstArgsIndent = cur_columns() - indent_ - indentForAlign_;
-        incIndentForAlign(firstArgsIndent);
+        firstArgsIndent = indent_ - indentForAlign_;
         visitExp(ctx->exp().front());
-        decIndentForAlign(firstArgsIndent);
     }
     if (n > 0) {
         cur_writer() << commentAfter(ctx->exp().front(), "");
