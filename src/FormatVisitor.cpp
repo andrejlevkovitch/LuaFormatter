@@ -697,9 +697,8 @@ antlrcpp::Any FormatVisitor::visitNamelist(LuaParser::NamelistContext* ctx) {
                     cur_writer() << indent();
                     indent_ -= firstParameterIndent;
                 } else {
-                    cur_writer() << commentAfterNewLine(ctx->COMMA()[i], INC_CONTINUATION_INDENT);
+                    cur_writer() << commentAfterNewLine(ctx->COMMA()[i], NONE_INDENT);
                     cur_writer() << indent();
-                    hasIncIndent = true;
                 }
             }
             cur_writer() << ctx->NAME()[i + 1]->getText();
@@ -910,9 +909,8 @@ antlrcpp::Any FormatVisitor::visitExplist(LuaParser::ExplistContext* ctx) {
                     cur_writer() << indentWithAlign();
                     hasIncIndentForAlign = true;
                 } else {
-                    cur_writer() << commentAfterNewLine(ctx->COMMA()[i], INC_CONTINUATION_INDENT);
+                    cur_writer() << commentAfterNewLine(ctx->COMMA()[i], NONE_INDENT);
                     cur_writer() << indentWithAlign();
-                    hasIncIndent = true;
                 }
             }
             visitExp(ctx->exp()[i + 1]);
