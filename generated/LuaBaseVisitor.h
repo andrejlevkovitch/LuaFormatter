@@ -1,5 +1,5 @@
 
-// Generated from Lua.g4 by ANTLR 4.7.1
+// Generated from Lua.g4 by ANTLR 4.7.2
 
 #pragma once
 
@@ -92,6 +92,14 @@ public:
   }
 
   virtual antlrcpp::Any visitNamelist(LuaParser::NamelistContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAttnamelist(LuaParser::AttnamelistContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAttrib(LuaParser::AttribContext *ctx) override {
     return visitChildren(ctx);
   }
 

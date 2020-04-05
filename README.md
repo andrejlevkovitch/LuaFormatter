@@ -13,15 +13,25 @@ Reformats your Lua source code.
 * Vim:     https://github.com/andrejlevkovitch/vim-lua-format
 
 ## Install
-Build from source.
 
-### Requirements
-* cmake 3.0+
-* c++ 11 compiler
+### LuaRocks
 
-### Steps
+The easiest way to install is to use [LuaRocks](https://github.com/luarocks/luarocks).
+
 ```bash
-    git clone https://github.com/Koihik/LuaFormatter.git
+luarocks install --server=https://luarocks.org/dev luaformatter
+```
+
+### Build from source
+
+#### Requirements
+* cmake 3.9+
+* c++ 17 compiler
+* luarocks 3.3.0+
+
+#### Steps
+```bash
+    git clone --recurse-submodules https://github.com/Koihik/LuaFormatter.git
     cd LuaFormatter
     cmake .
     make
@@ -29,16 +39,62 @@ Build from source.
 ```
 
 ## Usage
-`lua-format -c {your_style_file} {your_lua_file}`
 
-or use default style:
+```
+  ./lua-format [Lua scripts...] {OPTIONS}
 
-`lua-format {your_lua_file}`
+    Reformats your Lua source code.
+
+  OPTIONS:
+
+      -h, --help                        Display this help menu
+      -v, --verbose                     Turn on verbose mode
+      -i                                Reformats in-place
+      --dump-config                     Dumps the default style used to stdout
+      -c[file], --config=[file]         Style config file
+      Lua scripts...                    Lua scripts to format
+      "--" can be used to terminate flag options and force all following
+      arguments to be treated as positional options
+```
+
+The program will attempt to automatically use the current directory's `.lua-format` file if no config file is passed in the command line.
+In case there's no file, it will fallback to the default configuration.
 
 ### Style configure file
 
-See [Wiki Page](https://github.com/Koihik/LuaFormatter/wiki/Style-Config)
+Configuration parameters not specified fallback to their default values.
 
+See [this file](https://github.com/Koihik/LuaFormatter/blob/master/docs/Style-Config.md)
+
+### Default configuration
+
+```
+column_limit: 80
+indent_width: 4
+use_tab: false
+tab_width: 4
+continuation_indent_width: 4
+spaces_before_call: 1
+keep_simple_control_block_one_line: true
+keep_simple_function_one_line: true
+align_args: true
+break_after_functioncall_lp: false
+break_before_functioncall_rp: false
+align_parameter: true
+chop_down_parameter: false
+break_after_functiondef_lp: false
+break_before_functiondef_rp: false
+align_table_field: true
+break_after_table_lb: true
+break_before_table_rb: true
+chop_down_table: false
+chop_down_kv_table: true
+table_sep: ","
+extra_sep_at_table_end: false
+break_after_operator: true
+double_quote_to_single_quote: false
+single_quote_to_double_quote: false
+```
 ## Limitations
 
 * Do not work when source file contains syntax error

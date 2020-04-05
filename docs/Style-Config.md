@@ -74,26 +74,37 @@ local xxx, yyy =
     111, 222
 ```
 
-### keep_simple_block_one_line
+### keep_simple_control_block_one_line
 
 type: bool, default: true
 
-Allow format simple block to one line.
+Allow format simple control block(e.g. if, while, for, ...) to one line.
 
 ```lua
 -- keep_simple_block_one_line: true
-function x() print(1) end
 if cond then xx() end
 
 -- keep_simple_block_one_line: false
-function x()
-    print(1)
-end
 if cond then
     xx()
 end
 ```
 
+### keep_simple_function_one_line
+
+type: bool, default: true
+
+Allow format simple function to one line.
+
+```lua
+-- keep_simple_block_one_line: true
+function x() print(1) end
+
+-- keep_simple_block_one_line: false
+function x()
+    print(1)
+end
+```
 ### align_args
 
 type: bool, default: true
@@ -162,6 +173,24 @@ function xxx(aaa, bbb
 -- align_parameter: false
 function xxx(aaa, bbb
     ccc, ddd)
+```
+
+### chop_down_parameter
+
+type: bool, default: false
+
+Chop down all parameters if the function declaration doesn’t fit on a line.
+
+```lua
+-- chop_down_parameter: true
+function xxx(aaa, 
+             bbb,
+             ccc,
+             ddd)
+
+-- chop_down_parameter: false
+function xxx(aaa, bbb
+             ccc, ddd)
 ```
 
 ### break_after_functiondef_lp
@@ -253,6 +282,28 @@ x = {
   333, 444}
 ```
 
+### chop_down_table
+
+type: bool, default: false
+
+Chop down any table.
+
+```lua
+-- chop_down_table: true
+x = {
+    v1,
+    v2,
+    v3,
+    v4
+}
+
+-- chop_down_table: false
+x = {
+    v1, v2,
+    v3, v4
+}
+```
+
 ### chop_down_kv_table
 
 type: bool, default: true
@@ -338,4 +389,62 @@ x = 11111 + 11111
     + 11111
 ```
 
+### single_quote_to_double_quote
 
+type: bool, default: false
+
+Transform string literals to use double quote.
+
+```lua
+-- original
+local foo = 'a'
+local foo = '"'
+local bar = 'don\'t'
+local foo = '\''
+local foobar = '\\\\\''
+
+-- transformed
+local foo = "a"
+local foo = "\""
+local bar = "don't"
+local foo = "'"
+local foo = "\\\\'"
+```
+
+### double_quote_to_single_quote
+
+type: bool, default: false
+
+Transform string literals to use single quote.
+
+```lua
+-- original
+local foo = "a"
+local foo = "'"
+local bar = "don't"
+local bar = "\""
+local foobar = "\\\\\""
+
+-- transformed
+local foo = 'a'
+local foo = '\''
+local bar = 'don\'t'
+local bar = '"'
+local foobar = '\\\\"'
+```
+
+### spaces_before_call
+
+type: int, default: 1
+
+Inserts a space on function calls with parantheses omitted.
+
+```lua
+-- spaces_before_call: 1
+require "foo"
+f "a" "b"
+
+-- spaces_before_call: 0
+require"foo"
+f"a" "b"
+```

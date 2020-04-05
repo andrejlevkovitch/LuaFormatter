@@ -1,0 +1,7 @@
+local foo = 'a'
+local foo = '"'
+local bar = 'don\'t'
+local foo = '\''
+local foobar = '\\\\\''
+local kek = '\\'
+local topkek = 'a\\'

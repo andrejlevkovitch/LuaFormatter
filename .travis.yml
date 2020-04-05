@@ -1,78 +1,46 @@
 language: cpp
-sudo: false
 
 matrix:
   include:
 
     # linux gcc
     - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - ['g++-5']
       env:
-         - COMPILER='g++-5'
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - ['g++-6']
-      env:
-        - COMPILER='g++-6'
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - ['g++-7']
-      env:
-        - COMPILER='g++-7'
+         - COMPILER='g++-9'
 
     # os X
     - os: osx
-      osx_image: xcode7.3
+      osx_image: xcode11
       compiler: clang
-      env: COMPILER='clang++'
-
-    - os: osx
-      osx_image: xcode8
-      compiler: clang
-      env: COMPILER='clang++'
-
-    - os: osx
-      osx_image: xcode9
-      compiler: clang
-      env: COMPILER='clang++'
-
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: COMPILER='clang++'
+      env:
+         - COMPILER='clang++'
+         - MYLDFLAGS='-L/usr/local/opt/llvm/lib'
+         - MYCXXFLAGS='-I/usr/local/opt/llvm/include'
+         - MYPATH='/usr/local/opt/llvm/bin'
 
 
 addons:
   homebrew:
     packages:
-    - lcov
+    - llvm
     update: true
   apt:
+    sources:
+    - sourceline: 'ppa:ubuntu-toolchain-r/test'
     packages:
-    - lcov
+    - g++-9
     update: true
 
 before_install:
+  - export PATH="${MYPATH}:$PATH"
   - export CXX=${COMPILER}
+  - export LDFLAGS=${MYLDFLAGS}
+  - export CXXFLAGS=${MYCXXFLAGS}
+  - git submodule update --init
 
 install:
-  - cmake . -BRelease -DCMAKE_BUILD_TYPE=Release
-  - cmake . -BDebug -DCMAKE_BUILD_TYPE=Debug
+  - cmake -E env LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS" cmake . -BRelease -DCMAKE_BUILD_TYPE=Release
+  - cmake -E env LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS" cmake . -BDebug -DCMAKE_BUILD_TYPE=Debug
 
 script:
   - cd Debug
@@ -82,21 +50,12 @@ script:
   - make -j 2
   - CTEST_OUTPUT_ON_FAILURE=1 ctest -j 2
 
-after_success:
-  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      cd ${TRAVIS_BUILD_DIR}/Debug;
-      lcov --directory . --capture --output-file coverage.info;
-      lcov --remove coverage.info '*/usr/*' '*/test/*' '*/generated/*' '*/third_party/*' --output-file coverage.info;
-      lcov --list coverage.info;
-      bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports";
-    fi
-
 before_deploy:
-  - if [[ $TRAVIS_OS_NAME == "linux" && $COMPILER == "g++-7" ]]; then
+  - if [[ $TRAVIS_OS_NAME == "linux" && $COMPILER == "g++-9" ]]; then
       mkdir ${TRAVIS_BUILD_DIR}/bin;
       cp ${TRAVIS_BUILD_DIR}/Release/lua-format ${TRAVIS_BUILD_DIR}/bin/lua-format-linux;
     fi
-  - if [[ $TRAVIS_OS_NAME == "osx" && $TRAVIS_OSX_IMAGE == "xcode10" ]]; then
+  - if [[ $TRAVIS_OS_NAME == "osx" && $TRAVIS_OSX_IMAGE == "xcode11" ]]; then
       mkdir ${TRAVIS_BUILD_DIR}/bin;
       cp ${TRAVIS_BUILD_DIR}/Release/lua-format ${TRAVIS_BUILD_DIR}/bin/lua-format-darwin;
     fi
@@ -104,11 +63,11 @@ before_deploy:
 deploy:
   provider: s3
   access_key_id: "${AWS_KEY_ID}"
-  secret_access_key: 
+  secret_access_key:
     secure: "${AWS_ACCESS_KEY}"
   bucket: "lua-formatter-release"
   local_dir: "${TRAVIS_BUILD_DIR}/bin"
   skip_cleanup: true
   on:
     tags: true
-    condition: $COMPILER == g++-7 || $TRAVIS_OSX_IMAGE == xcode10
+    condition: $COMPILER == g++-9 || $TRAVIS_OSX_IMAGE == xcode11
