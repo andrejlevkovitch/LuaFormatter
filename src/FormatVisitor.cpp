@@ -1088,7 +1088,14 @@ antlrcpp::Any FormatVisitor::visitPrefixexp(LuaParser::PrefixexpContext* ctx) {
         cur_writer() << commentAfter(ctx->varOrExp(), ws);
     }
 
-    buildArguments(ctx->nameAndArgs());
+    if (config_.get<bool>("align_parameter")) {
+        buildArguments(ctx->nameAndArgs());
+    } else {
+        int temp = indentForAlign_;
+        indentForAlign_ = 0;
+        buildArguments(ctx->nameAndArgs());
+        indentForAlign_ = temp;
+    }
 
     if (chainedMethodCallHasIncIndent_.back()) {
         decContinuationIndent();
